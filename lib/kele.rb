@@ -1,20 +1,28 @@
 require 'httparty'
+require "json"
 
   class Kele
     include HTTParty
+    attr_reader :auth_token
     base_uri 'https://www.bloc.io/api/v1'
 
     def initialize(email, password)
       response = self.class.post('/sessions', body: {"email": email, "password": password})
       case response.code
         when 200
-          puts "All good!"
+          puts "Great job, It is up and running!"
         when 404
-          puts "Invalid credentials! Try again."
+          puts "Sorry! Try again."
         when 500...600
-          puts "ZOMG ERROR #{response.code}"
+          puts "ERROR #{response.code}"
       end
-
-      @auth = response['auth_token']
+      puts response.code
+      @auth_token = response["auth_token"]
     end
-  end 
+
+    def get_me
+      response = self.class.get('/users/me', headers: {"authorization" => @auth_token})
+      @user_data = JSON.parse(response.body)
+      @user_data
+    end
+  end
