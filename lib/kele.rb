@@ -1,8 +1,10 @@
 require 'httparty'
 require "json"
+require_relative 'roadmap'
 
   class Kele
     include HTTParty
+    include Roadmap
     attr_reader :auth_token
     base_uri "https://www.bloc.io/api/v1"
 
@@ -31,4 +33,3 @@ require "json"
       JSON.parse(response.body)
     end
   end
-# "mentor_id"=>2345139
