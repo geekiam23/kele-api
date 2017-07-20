@@ -32,4 +32,21 @@ require_relative 'roadmap'
       response = self.class.get("/mentors/#{mentor_id}/student_availability", headers: {"authorization" => @auth_token})
       JSON.parse(response.body)
     end
+
+    def get_messages(page = nil)
+      response = self.class.get("/message_threads", values: {"page" => page}, headers: {"authorization" => @auth_token})
+      JSON.parse(response.body)
+    end
+
+    def create_message(sender, recipient_id, token, subject, message)
+      response = self.class.post("/messages", values: {sender: sender, recipient_id: recipient_id, token: token, subject: subject, "stripped-text" => message}, headers: {authorization: @auth_token})
+      case response.code
+        when 200
+          puts "Great job, It is up and running!"
+        when 404
+          puts "Sorry! Try again."
+        when 500...600
+          puts "ERROR #{response.code}"
+      end
+    end
   end
