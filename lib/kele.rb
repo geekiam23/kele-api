@@ -38,8 +38,34 @@ require_relative 'roadmap'
       JSON.parse(response.body)
     end
 
-    def create_message(sender, recipient_id, token, subject, message)
-      response = self.class.post("/messages", values: {sender: sender, recipient_id: recipient_id, token: token, subject: subject, "stripped-text" => message}, headers: {authorization: @auth_token})
+    def create_message(sender, recipient_id, subject, message)
+      response = self.class.post("/messages",
+        headers: {authorization: @auth_token},
+        body: {
+          sender: sender,
+          recipient_id: recipient_id,
+          subject: subject,
+          "stripped-text" => message
+        }
+      )
+      case response.code
+        when 200
+          puts "Great job, It is up and running!"
+        when 404
+          puts "Sorry! Try again."
+        when 500...600
+          puts response
+      end
+    end
+
+    def create_submission(assignment_branch, assignment_commit_link,  checkpoint_id, comment, enrollment_id)
+      response = self.class.post("/checkpoint_submissions",
+      headers: {authorization: @auth_token},
+        body: {
+          assignment_branch: assignment_branch, assignment_commit_link: assignment_commit_link,
+          checkpoint_id: checkpoint_id,
+          comment: comment,
+          enrollment_id: enrollment_id})
       case response.code
         when 200
           puts "Great job, It is up and running!"
